@@ -1,0 +1,60 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <style type="text/css">
+        * { margin: 0; padding: 0; font-family: Consolas; font-size: 8pt; }
+        .wrap { width: 80%; margin: 1.0em auto; padding: 1.0em; background-color: #eee; border-radius: 0.5em; }
+        fieldset { border: 0; }
+        fieldset li { list-style-type: none; margin: 0.5em; }
+        </style>
+        <script type="text/javascript">
+        function send() {
+            var frm = document.forms[0];
+            var datamode = document.getElementById("datamode");
+            
+            if (datamode == "0") {
+                return true;
+            }
+            
+            frm.addEventListener('submit', function (e) {
+                var data = {};
+                for (var i = 0, i_len = this.elements.length; i < i_len; i++) {
+                    if (this.elements[i].name != "") {
+                        var k = this.elements[i].name;
+                        var v = this.elements[i].value;
+                        data[k] = v;
+                    }
+                }
+                var input = document.createElement("input");
+                input.type = "hidden";
+                input.name = "DATA";
+                input.value = btoa(JSON.stringify(data));
+                this.appendChild(input);
+                
+                // var el_last = this.childNodes[this.childNodes.length - 1];
+                // alert(el_last.name + " : " + el_last.value);
+                // e.preventDefault();
+            }, false);
+        }
+        
+        document.addEventListener('DOMContentLoaded', send, false);
+        </script>
+    </head>
+    <body>
+        <div class="wrap">
+        <fieldset>
+            data mode : <input type="text" id="datamode" value="0" />
+        </fieldset>
+        <form method="post" action="../main.php">
+            <fieldset>
+            <ul>
+                <li>cmd <input type="text" name="cmd" value="2000" /></li>
+                <li>uid <input type="text" name="uid" value="abc" /></li>
+                <li>useq <input type="text" name="useq" value="1" /></li>
+                <li><input type="submit" /></li>
+            </ul>
+            </fieldset>
+        </form>
+        </div>
+    </body>
+</html>
