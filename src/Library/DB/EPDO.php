@@ -219,6 +219,12 @@ class EPDO extends PDO implements IDB
     public function quote($value, $type = 'string')
     {
         if ($type === null && gettype($value) === 'string' || $type === 'string') {
+            // ; is query separator for procedure.
+            // my chosen is input request limitation and better performance
+            // - performance : simple SUBSTRING(..., 1)
+            // - flexible    : set the input parameter and SUBSTRING(..., length(param))
+            $value = str_replace(';', '', $value);
+            
             $value = parent::quote($value);
         }
         
