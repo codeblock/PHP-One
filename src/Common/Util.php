@@ -100,7 +100,146 @@ class Util
     
     //arrayMapsByKey
     
-    //arraySearchByRange
+    /**
+     * search the key of array using binary search
+     *
+     * must be already sorted set on caller
+     * if needs range search, it can be controlled by $comparison parameter
+     * Warning: if use for equal comparison only, using the array_search for performance
+     *
+     * @param array  $arr        row for find
+     * @param number $search     value for find with $comparison
+     * @param string $comparison =, <, >, <=, >=
+     * @return mixed $rtn        key of row or null
+     */
+    public static function arraySearchByRange($arr = [], $search = null, $comparison = '=')
+    {
+        $rtn = null;
+        $idx = null;
+        
+        if (is_array($arr) === false || (is_numeric($search) === false && is_string($search) === false)) {
+            return $rtn;
+        }
+        
+        // if use for equal comparison only, using the array_search for performance
+        //if ($comparison === '=') {
+        //    $idx = array_search($search, $arr, true);
+        //    if ($idx !== false) {
+        //        $rtn = $idx;
+        //    }
+        //
+        //    return $rtn;
+        //}
+        
+        // must be already sorted set on caller
+        //asort($arr);
+        
+        // Basically, should be scalar array, and it must be doesn't needs phrases below for performance.
+        // now, associative array supported
+        //595f998fcade94 $vals = $arr;
+        $keys = array_keys($arr);
+        $vals = array_values($arr);
+        
+        $cnt     = count($vals) - 1;
+        $range_s = (int)floor(($cnt - 1) / 2);
+        $range_e = $cnt;
+        
+        if ($vals[$range_s] > $search) {
+            $range_e -= $range_s;
+            $range_s = 0;
+        }
+        
+        $repeat  = 0;
+        
+        //dbg $analysis = [];
+        //dbg $analysis['sample']     = $arr;
+        //dbg $analysis['search']     = $search;
+        //dbg $analysis['comparison'] = $comparison;
+        //dbg $analysis['retry']      = [];
+        //dbg $analysis['retry'][]    = '[base] range_s: ' . $range_s . ', range_e: ' . $range_e;
+        
+        while (true) {
+            if ($repeat >= 100) {
+                Debug::trace('this algorythm has problems');
+                break;
+            }
+            $repeat++;
+            
+            $mid = (int)floor(($range_e - $range_s) / 2);
+            if ($vals[$range_s + $mid] < $search) {
+                $range_s += $mid;
+            } else {
+                $range_e -= $mid;
+            }
+            
+            //dbg $analysis['retry'][] = '[loop] range_s: ' . $range_s . ', range_e: ' . $range_e;
+            
+            if ($range_e - $range_s === 1) {
+                switch ($comparison) {
+                    case '<':
+                        if ($search < $vals[$range_s]) {
+                            $idx = $range_s;
+                        } else if ($vals[$range_s] <= $search && $search < $vals[$range_e]) {
+                            $idx = $range_e;
+                        } else if ($vals[$range_e] <= $search) {
+                            $idx = $range_e + 1;
+                        }
+                        break;
+                    case '>':
+                        if ($search > $vals[$range_e]) {
+                            $idx = $range_e;
+                        } else if ($vals[$range_e] >= $search && $search > $vals[$range_s]) {
+                            $idx = $range_s;
+                        } else if ($vals[$range_s] >= $search) {
+                            $idx = $range_s - 1;
+                        }
+                        break;
+                    case '<=':
+                        if ($search <= $vals[$range_s]) {
+                            $idx = $range_s;
+                        } else if ($vals[$range_s] < $search && $search <= $vals[$range_e]) {
+                            $idx = $range_e;
+                        } else if ($vals[$range_e] < $search) {
+                            $idx = $range_e + 1;
+                        }
+                        break;
+                    case '>=':
+                        if ($search >= $vals[$range_e]) {
+                            $idx = $range_e;
+                        } else if ($vals[$range_e] > $search && $search >= $vals[$range_s]) {
+                            $idx = $range_s;
+                        } else if ($vals[$range_s] > $search) {
+                            $idx = $range_s - 1;
+                        }
+                        break;
+                    default: // case '='
+                        if ($search === $vals[$range_s]) {
+                            $idx = $range_s;
+                        } else if ($search === $vals[$range_e]) {
+                            $idx = $range_e;
+                        }
+                }
+                break;
+            }
+        }
+        
+        //dbg $analysis['repeat'] = $repeat;
+        
+        //595f998fcade94 if (isset($vals[$idx]) === true) {
+        if (isset($keys[$idx]) === true) {
+            //dbg $analysis['result'] = $keys[$idx];
+            //595f998fcade94 $rtn = $idx;
+            $rtn = $keys[$idx];
+        } else {
+            //dbg $analysis['result'] = null;
+            Debug::log('cannot find value');
+        }
+        
+        //dbg Debug::log(print_r($analysis, true)); // as-is
+        //dbg //Debug::log($this->jsonEncode($analysis)); // to-be
+        
+        return $rtn;
+    }
     
     /**
      * timestamp for next initialization with adjusted timezone
