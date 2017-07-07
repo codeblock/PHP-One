@@ -134,7 +134,7 @@ class Util
         // must be already sorted set on caller
         //asort($arr);
         
-        // Basically, should be scalar array, and it must be doesn't needs phrases below for performance.
+        // Basically, should be indexed array, and it must be doesn't needs phrases below for performance.
         // now, associative array supported
         //595f998fcade94 $vals = $arr;
         $keys = array_keys($arr);
