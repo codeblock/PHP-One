@@ -236,7 +236,7 @@ class Util
         }
         
         //dbg Debug::log(print_r($analysis, true)); // as-is
-        //dbg //Debug::log($this->jsonEncode($analysis)); // to-be
+        //dbg //Debug::log(json_encode($analysis)); // to-be
         
         return $rtn;
     }
@@ -353,5 +353,24 @@ class Util
         return is_array($arr) === true && is_array(current($arr)) === false;
     }
     
-    //randByRangeOfSum
+    public static function randByRangeOfSum($arr = [])
+    {
+        $rtn = null;
+        
+        if (is_array($arr) === false) {
+            return $rtn;
+        }
+        
+        asort($arr);
+        
+        $starts = min($arr);
+        $ends   = array_sum($arr);
+        $random = mt_rand($starts, $ends);
+        
+        $random = min($random, max($arr));
+        
+        //dbg Debug::log(json_encode($arr) . ' : ' . $random . ' (' . $starts . ' ~ ' . $ends . ')');
+        
+        return self::arraySearchByRange($arr, $random, '<=');
+    }
 }

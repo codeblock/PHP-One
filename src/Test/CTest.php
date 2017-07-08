@@ -220,6 +220,22 @@ class CTest extends Data
         echo Util::date('Y-m-d H:i:s', $z) . PHP_EOL;
     }
     
+    public function rand()
+    {
+        $arr = [
+            'x' => 76,
+            'c' => 13,
+            'a' => 1,
+            'r' => 208,
+            'n' => 87,
+            'z' => 1000
+        ];
+        
+        $rtn = Util::randByRangeOfSum($arr);
+        
+        echo $rtn . PHP_EOL;
+    }
+    
     public function test()
     {
         //$this->performance(1, 1);
@@ -228,6 +244,7 @@ class CTest extends Data
         //$this->testModule();
         //$this->exampleDB();
         //$this->arrayManipulation();
-        $this->dateManipulation();
+        //$this->dateManipulation();
+        $this->rand();
     }
 }
